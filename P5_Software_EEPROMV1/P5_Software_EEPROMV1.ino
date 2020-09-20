@@ -17,7 +17,7 @@
 #define circut_voltage_messure_Pin A0
 #define motor_voltage_messure_Pin A6
 #define messure_voltage_pin A2
-#define ESC_PIN A3 //ändern
+#define ESC_PIN A3
 #define Reciver_Pin_Motor 3 
 #define EEPROM_addr B1010000
 
@@ -53,7 +53,7 @@ void loop() {
   }
   //reads back all measure blocks if bytes a are received via serial connection (not implemented)
   if(Serial.available() > 0){
-    //start reading from EEPROM
+    //implement
   }
 }
 /*
@@ -65,7 +65,7 @@ void loop() {
 void pwmToESC(){
   if(passthroughmode){
     int pwm_value = pulseIn(Reciver_Pin_Motor, HIGH);
-    int pwmSignal = map(pwm_value,0,1337,0,180); //TODO: change from values
+    int pwmSignal = map(pwm_value,0,1337,0,180);
     motor.write(pwmSignal); 
   }
 }
@@ -74,14 +74,14 @@ void dataLogging(){
     unsigned short timestamp = millis() / 1000;
     
     unsigned short solarPanelVoltage = mesureSolarPanelVoltage();
-    unsigned short currentAtSolar = mesureCurrent(mesureCircuteVoltage(), solarPanelVoltage); // float oder short
+    unsigned short currentAtSolar = mesureCurrent(mesureCircuteVoltage(), solarPanelVoltage);
     
     unsigned short batteryVoltage = mesureBatteryVoltage;
     unsigned short current = mesureCurrent(mesureVoltage(), batteryVoltage);
     
     unsigned short height;
     
-    if((batteryVoltage * 10) < 717){//if the voltage drops below 3.5V, the motor will get shutdowned
+    if((batteryVoltage * 10) < 717){
       shutdownMotor();
       passthroughmode = false;
     } else if((batteryVoltage * 10) > 819 && !passthroughmode){
@@ -96,11 +96,7 @@ void dataLogging(){
       writeShortToEEPROM(batteryVoltage, (addr + 6));
       writeShortToEEPROM(current, (addr + 8));
       writeShortToEEPROM(height, (addr + 10));
-      /*
-      *
-      * write the left data to the EEPROM
-      *
-      */ 
+    
       mesureBlocks += 1;
       setWritePointer();
     }
@@ -184,7 +180,6 @@ void writeFloatToEEPROM(float number,unsigned short addr){
 }
 //writes the number of meassured blocks at a static address on EEPROM chip
 void setWritePointer(){
-  //write the number of messurements to the EEPROM
    Wire.beginTransmission(EEPROM_addr);
    Wire.write((unsigned short) (write_index_addr >> 8));
    Wire.write((unsigned short) (write_index_addr & 0xFF));
@@ -198,7 +193,7 @@ void setWritePointer(){
 }
 //reads back all measure blocks via serial connection to connected computer
 void readDataFromEEPROM(){
-  //reading the write_index_pointer
+  //gets the write_pointer
   Wire.beginTransmission(EEPROM_addr);
   Wire.write((unsigned short) (write_index_addr >> 8)); 
   Wire.write((unsigned short) (write_index_addr & 0xFF));
@@ -230,7 +225,7 @@ void readDataFromEEPROM(){
       b[i] = Wire.read();
       i++;
     }
-    sentDataSerial(b); //sending the messureBlock via Serial connection to connected PC
+    sentDataSerial(b); //sending the messureBlock via serial connection to connected PC
     index++;
   }
 }

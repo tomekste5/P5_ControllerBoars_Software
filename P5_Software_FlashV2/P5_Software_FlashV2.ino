@@ -18,7 +18,7 @@
 
 #define ESC_PIN 9  
 #define Reciver_Pin_Motor 3
-#define AUX_Pin 2 //not nessesary
+#define AUX_Pin 2
 #define taster_Pin 6 
 
 //global Variables
@@ -58,7 +58,7 @@ void loop() {
       erase= false;
     }
     dataLogging();
-    reciverSignalToESC();
+    forwardRecvSignal();
     #ifdef BatteryCutOffFunction
       activateDeactivateOverwrite();
     #endif
@@ -83,7 +83,7 @@ void loop() {
  * 
  */
 //will forward pwm signal from a reciver to a ESC if g_passthroughmode true.
-void reciverSignalToESC(){// reads the pwm Signal from the reciver and transfers it to the ESC_PIN(if passthroughmode is true)
+void forwardRecvSignal(){// reads the pwm Signal from the reciver and transfers it to the ESC_PIN(if passthroughmode is true)
   if(g_passthroughmode){
     int pwmValue = pulseIn(Reciver_Pin_Motor, HIGH);
      #ifdef Servo
@@ -97,10 +97,10 @@ void reciverSignalToESC(){// reads the pwm Signal from the reciver and transfers
         }
         
     #else
-      int pwmSignal = map(pwmValue,1100,1800,20,200); //change values until its working!
-        if(pwmSignal > 200){ //change value according to map values
+      int pwmSignal = map(pwmValue,1100,1800,20,200);
+        if(pwmSignal > 200){
               analogWrite(ESC_PIN,200);
-        }else if(pwmSignal < 20){ //change value according to map values
+        }else if(pwmSignal < 20){
               analogWrite(ESC_PIN,20);
         }else{
               analogWrite(ESC_PIN,pwmSignal);
