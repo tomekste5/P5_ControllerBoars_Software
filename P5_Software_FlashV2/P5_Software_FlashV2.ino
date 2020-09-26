@@ -55,7 +55,7 @@ void loop() {
   while(g_flyMode){
     if(!erase){
       flash.eraseChip();
-      erase= false;
+      erase= true;
     }
     dataLogging();
     forwardRecvSignal();
@@ -116,7 +116,7 @@ void flushSerialBuffer(){
 }
 //measures 5 float variabkes every 200ms and writes it to flash. If live is defined it will output all measured values via a serial connection to the connected computer
 void dataLogging(){
-    if(g_elapseTime <= millis()){
+     if(g_elapseTime <= millis()){
      float timeStamp = millis() / 1000.00;
     
      float solarLow  = measureSolarLow();
@@ -134,11 +134,10 @@ void dataLogging(){
      writeFloatToFlash(addr + 12, MDL);
      writeFloatToFlash(addr + 16, batteryVoltage);
      g_measureBlocks +=1;
-     
      #ifdef live
        Serial.print("Timespamp: ");
        Serial.print(timeStamp);
-       Serial.print("V SolarLow: ");
+       Serial.print("S SolarLow: ");
        Serial.print(solarLow);
        Serial.print("V SolarHigh: ");
        Serial.print(solarHigh);
@@ -149,7 +148,7 @@ void dataLogging(){
        Serial.println("V");
      #endif
 
-     g_elapseTime = millis() + 200; // Datenmessen mit 5Hz
+     g_elapseTime = millis() + 500; // Datenmessen mit 2Hz
     }
 }
 
@@ -192,8 +191,8 @@ void writeFloatToFlash(uint32_t addr, float data){//writes a Float to the flash 
 }
 //reads all measure blocks and sents it via Serial to a computer
 void readFromFlash(){
-  float measureBlock[5]; 
-  Serial.println("Time stamp,SolarLow,SolarHigh,MDL,BatteryVoltage");//sents the headlines for the csv file
+  float measureBlock[5];
+  Serial.println("Time stamp,SolarLow,SolarHigh,MDL,BatteryVoltage"); 
   int readPointer = 0;
   while(true){
     //reads in one measure block
